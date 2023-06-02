@@ -1,0 +1,24 @@
+{
+  "name": "telergambot-git",
+  "version": "1.0.0",
+  "description": "ham radio telegram bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k2u6m5i3r/ham-telegram-bot.git"
+  },
+  "author": "EW8MKU, k2u6m5i3r",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/k2u6m5i3r/ham-telegram-bot/issues"
+  },
+  "homepage": "https://github.com/k2u6m5i3r/ham-telegram-bot#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "node-telegram-bot-api": "^0.61.0",
+    "nodemon": "^2.0.22"
+  }
+}
