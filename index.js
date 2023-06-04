@@ -101,3 +101,70 @@ function parsingCallsign(params) {
 setInterval(function () {
     console.log("MINUTs");
 }, 60 * 1000)
+
+setInterval(function () {
+    //40m
+    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
+     //2m
+    fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
+    //15m
+    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
+    //10m
+    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=28000000-29000000')
+    //20m
+    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=14000000-15000000')
+    //30m
+    // fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=10000000-11000000')
+        .then(res => {
+            res.text().then(result => {
+                console.log(`prommis good fetch pskreporter`);
+                let answer = result.toString().split("<").filter(item => {
+                    return item.toString().includes(callsign);
+                })
+                answer = answer.filter(item => {
+                    if (item.includes(callsign) && item.includes("receptionReport")) {
+                        return true;
+                    } else {
+                        console.log(`не упоминался позывной в запорсе ${callsign}`);
+                        return false;
+                    }
+                }).map(item => {
+                    let parse = item.split(" ");
+                    let callsignUser = parse[3].split("=")[1].slice(1, -1);
+                    if (!objFullDBCurrent.hasOwnProperty(callsignUser)) {
+                        objFullDBCurrent[callsignUser] = parsingCallsign(parse);
+                    }
+                    return parsingCallsign(parse);
+                })
+                // console.log(answer);
+                for (const keyInCurrent in objFullDBCurrent) {
+                    if(objFullDBOld[keyInCurrent] == undefined){
+                        otpavlyal = false;
+                        objFullDBShow[keyInCurrent] = objFullDBCurrent[keyInCurrent];
+                    }
+                    if(objFullDBOld.hasOwnProperty(keyInCurrent) && objFullDBOld[keyInCurrent].flowStartSeconds != objFullDBCurrent[keyInCurrent].flowStartSeconds){
+                        otpavlyal = false;
+                        objFullDBShow[keyInCurrent] = objFullDBCurrent[keyInCurrent];
+                    }
+                }
+                let sendToBot = "";
+                for (const key in objFullDBShow) {
+                    sendToBot+= objFullDBShow[key].inSendingToBot+"\n";
+                }
+                // TODO: нужно проверить чтобы сообщение не превышало лимита по длинне. выпадают ошибки
+                if (otpavlyal == false && sendToBot.length >0) {
+                    otpavlyal = true;
+                    sendMessageAll(startMessage + sendToBot);
+                    // sendMessage(startMessage + sendToBot, users[0]);
+                }
+                console.log("current", objFullDBCurrent);
+                // console.log("old", objFullDBOld);
+                console.log("show", objFullDBShow);
+                
+                objFullDBOld = JSON.parse(JSON.stringify(objFullDBCurrent));
+                objFullDBShow = {};
+                objFullDBCurrent = {};
+            })
+        })
+        .then(text => console.log(`prommis error fetch pskreporter ${text}`))
+}, 300 * 1000);
