@@ -40,3 +40,9 @@ jspm_packages
 
 #token bot
 tokenBot.js
+
+#token bot test
+tokenBotTest.js
+
+#users to send message
+fullListUsers.js
