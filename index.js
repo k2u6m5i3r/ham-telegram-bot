@@ -99,15 +99,17 @@ bot.on('message', (msg) => {
             bot.sendMessage(chatId, ` 1. Бот умеет отвечать текстом который Вы написали.\n2. Оповещать о прохождении на 2м(если Вы подпишитесь, пункт меню /register)\n3. Отписаться от оповещения пункт меню /unreg.\n4. Можно задать вопросы...`);
         }
         if (msg.text.slice(0, 8) == '/sendall') {
-            if (chatId == users[0]) {
+            if (admins.includes(chatId)) {// только админы могут писать всем и одному пользователю.
                 sendMessageAll(msg.text.slice(8));
             }
         }
         if (msg.text.slice(0, 8) == '/sendone') {
-            let answerOne = msg.text.split(" ")
-            console.log(answerOne[0], answerOne[1]);
-            sendMessage(answerOne.slice(2).join(" "), answerOne[1]);
-            console.log(answerOne.slice(2).join(" "));
+            if (admins.includes(chatId)) {// только админы могут писать всем и одному пользователю.
+                let answerOne = msg.text.split(" ")
+                console.log(answerOne[0], answerOne[1]);
+                sendMessage(answerOne.slice(2).join(" "), answerOne[1]);
+                console.log(answerOne.slice(2).join(" "));
+            }
         }
     } else {
         bot.sendMessage(chatId, `Ты написал вот это ${msg.text}`);
