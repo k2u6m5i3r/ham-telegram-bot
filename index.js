@@ -20,6 +20,12 @@ module.exports = {
     // добавить вручную
     return users;
   }
+    admins() {
+    let admins = [];
+    admins.push(XXXXXX);// админ в 0ой ячейке.  XXXXXX - ChatId 
+    // добавить вручную
+    return admins;
+    }
 }
 */
 let callsign = "\"EW8MKU\"";
@@ -34,10 +40,14 @@ let objFullDBShow = {};         // показать новое если есть
 
 // массив ChatID это пользователи которые будут получать сообщения. в 0-ячейке находится админ он может всем рассылать сообщнения вручную всем
 let users = chatIdUsers.users();
+// добавил adminОв отдельным массивом пользователей 
+let admins = chatIdUsers.admins();
 
+///*
 bot.setMyCommands([
-    { command: '/start', description: 'Начать получать информацию!. Проверить что бот работает, можно отправить сообщение и в ответ получить его копию.' },
-    { command: '/reg', description: 'Регистрация не работает! Записываю кому отправлять вручную.' },
+    { command: '/start', description: 'Что может бот?' },
+    { command: '/register', description: 'Получать уведомление' },
+    { command: '/unreg', description: 'Не  получать уведомления' },
 ])
 bot.onText(/\/echo (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
@@ -47,23 +57,63 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.onText(/\/register/, (msg, match) => {
     const chatId = msg.chat.id
     // users.push(chatId)
-    // console.log('user registered')
-    // bot.sendMessage(chatId, 'Done.')
+    console.log('user registered')
+    bot.sendMessage(chatId, 'Done.')
+    if (users.includes(chatId)) {
+        console.log("Уже есть в базе");
+        bot.sendMessage(chatId, `Уже есть в базе. Для отписки выполнить /unreg`);
+    } else {
+        console.log("Вношу в базу");
+        users.push(chatId)
+        bot.sendMessage(chatId, `Будет приходить оповещение! Для отписки выполнить /unreg`);
+    }
+})
+bot.onText(/\/unreg/, (msg, match) => {
+    const chatId = msg.chat.id
+    // users.push(chatId)
+    console.log('user unregistered')
+    console.log("Отписка");
+    if (users.includes(chatId)) {
+        users.splice(users.indexOf(chatId), 1);
+        bot.sendMessage(chatId, `Отписал. Чтобы получать уведомление перейди /register.)`);
+    } else {
+        bot.sendMessage(chatId, `Не получаешь уведомления. Чтобы получать уведомление перейди /register.)`);
+    }
+
+})
+bot.onText(/\/save/, (msg, match) => {
+    const chatId = msg.chat.id
+    // users.push(chatId)
+    if (chatId == users[0]) {
+        console.log('save BD');
+        console.log(`${users}`);
+    }
 })
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
-    users.push(chatId);
+    // users.push(chatId); // ошибка исправить
     console.log(msg);
-    bot.sendMessage(chatId, `Ты написал вот это ${msg.text}`);
-    if (msg.text == '//start') {
 
+    if (msg.text.slice(0, 1) == '/') {//команды управления!
+        if (msg.text == '/start') {
+            bot.sendMessage(chatId, ` 1. Бот может повторить сообщение которое Вы написали.\n2. Оповещать о прохождении на 2м(если мой SDR примет цифру FT8, FT4 - придёт сообщение от бота, что на УКВ 144МГц есть активность)(если Вы подпишитесь, пункт меню /register)\n3. Отписаться от оповещения пункт меню /unreg.\n4. Можно задать вопросы. Пишите сюда обычное сообщение.\n5. появилось зеркало на github моего сайта http://185.152.138.138/ \nhttps://k2u6m5i3r.github.io/SDR-web-pages/`);
+        }
+        if (msg.text.slice(0, 8) == '/sendall') {
+            if (admins.includes(chatId)) {// только админы могут писать всем и одному пользователю.
+                sendMessageAll(msg.text.slice(8));
+            }
+        }
+        if (msg.text.slice(0, 8) == '/sendone') {
+            if (admins.includes(chatId)) {// только админы могут писать всем и одному пользователю.
+                let answerOne = msg.text.split(" ")
+                console.log(answerOne[0], answerOne[1]);
+                sendMessage(answerOne.slice(2).join(" "), answerOne[1]);
+                console.log(answerOne.slice(2).join(" "));
+            }
+        }
+    } else {
+        bot.sendMessage(chatId, `Ты написал вот это ${msg.text}`);
     }
-    if (msg.text.slice(0, 8) == '/sendall') {
-        if(chatId == users[0]){
-            sendMessageAll(msg.text.slice(8));
-        }   
-    }
-
 });
 function sendMessage(mdg, chatId) {
     let ans = bot.sendMessage(chatId, mdg);
@@ -104,17 +154,17 @@ setInterval(function () {
 
 setInterval(function () {
     //40m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
-     //2m
-    fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
-    //15m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
-    //10m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=28000000-29000000')
-    //20m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=14000000-15000000')
-    //30m
-    // fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=10000000-11000000')
+    fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
+    //2m
+    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
+        //15m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
+        //10m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=28000000-29000000')
+        //20m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=14000000-15000000')
+        //30m
+        // fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=10000000-11000000')
         .then(res => {
             res.text().then(result => {
                 console.log(`prommis good fetch pskreporter`);
@@ -138,21 +188,21 @@ setInterval(function () {
                 })
                 // console.log(answer);
                 for (const keyInCurrent in objFullDBCurrent) {
-                    if(objFullDBOld[keyInCurrent] == undefined){
+                    if (objFullDBOld[keyInCurrent] == undefined) {
                         otpavlyal = false;
                         objFullDBShow[keyInCurrent] = objFullDBCurrent[keyInCurrent];
                     }
-                    if(objFullDBOld.hasOwnProperty(keyInCurrent) && objFullDBOld[keyInCurrent].flowStartSeconds != objFullDBCurrent[keyInCurrent].flowStartSeconds){
+                    if (objFullDBOld.hasOwnProperty(keyInCurrent) && objFullDBOld[keyInCurrent].flowStartSeconds != objFullDBCurrent[keyInCurrent].flowStartSeconds) {
                         otpavlyal = false;
                         objFullDBShow[keyInCurrent] = objFullDBCurrent[keyInCurrent];
                     }
                 }
                 let sendToBot = "";
                 for (const key in objFullDBShow) {
-                    sendToBot+= objFullDBShow[key].inSendingToBot+"\n";
+                    sendToBot += objFullDBShow[key].inSendingToBot + "\n";
                 }
                 // TODO: нужно проверить чтобы сообщение не превышало лимита по длинне. выпадают ошибки
-                if (otpavlyal == false && sendToBot.length >0) {
+                if (otpavlyal == false && sendToBot.length > 0) {
                     otpavlyal = true;
                     sendMessageAll(startMessage + sendToBot);
                     // sendMessage(startMessage + sendToBot, users[0]);
@@ -160,7 +210,7 @@ setInterval(function () {
                 console.log("current", objFullDBCurrent);
                 // console.log("old", objFullDBOld);
                 console.log("show", objFullDBShow);
-                
+
                 objFullDBOld = JSON.parse(JSON.stringify(objFullDBCurrent));
                 objFullDBShow = {};
                 objFullDBCurrent = {};
@@ -168,3 +218,4 @@ setInterval(function () {
         })
         .then(text => console.log(`prommis error fetch pskreporter ${text}`))
 }, 300 * 1000);
+//*/
