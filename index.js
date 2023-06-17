@@ -96,7 +96,7 @@ bot.on('message', (msg) => {
 
     if (msg.text.slice(0, 1) == '/') {//команды управления!
         if (msg.text == '/start') {
-            bot.sendMessage(chatId, ` 1. Бот умеет отвечать текстом который Вы написали.\n2. Оповещать о прохождении на 2м(если Вы подпишитесь, пункт меню /register)\n3. Отписаться от оповещения пункт меню /unreg.\n4. Можно задать вопросы...`);
+            bot.sendMessage(chatId, ` 1. Бот может повторить сообщение которое Вы написали.\n2. Оповещать о прохождении на 2м(если Вы подпишитесь, пункт меню /register)\n3. Отписаться от оповещения пункт меню /unreg.\n4. Можно задать вопросы...`);
         }
         if (msg.text.slice(0, 8) == '/sendall') {
             if (admins.includes(chatId)) {// только админы могут писать всем и одному пользователю.
@@ -154,9 +154,9 @@ setInterval(function () {
 
 setInterval(function () {
     //40m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
+    fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
     //2m
-    fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
+    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
         //15m
         //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
         //10m
