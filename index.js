@@ -91,7 +91,7 @@ bot.onText(/\/save/, (msg, match) => {
 })
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
-    users.push(chatId);
+    // users.push(chatId); // ошибка исправить
     console.log(msg);
 
     if (msg.text.slice(0, 1) == '/') {//команды управления!
