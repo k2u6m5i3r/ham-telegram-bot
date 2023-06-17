@@ -57,23 +57,61 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 bot.onText(/\/register/, (msg, match) => {
     const chatId = msg.chat.id
     // users.push(chatId)
-    // console.log('user registered')
-    // bot.sendMessage(chatId, 'Done.')
+    console.log('user registered')
+    bot.sendMessage(chatId, 'Done.')
+    if (users.includes(chatId)) {
+        console.log("Уже есть в базе");
+        bot.sendMessage(chatId, `Уже есть в базе. Для отписки выполнить /unreg`);
+    } else {
+        console.log("Вношу в базу");
+        users.push(chatId)
+        bot.sendMessage(chatId, `Будет приходить оповещение! Для отписки выполнить /unreg`);
+    }
+})
+bot.onText(/\/unreg/, (msg, match) => {
+    const chatId = msg.chat.id
+    // users.push(chatId)
+    console.log('user unregistered')
+    console.log("Отписка");
+    if (users.includes(chatId)) {
+        users.splice(users.indexOf(chatId), 1);
+        bot.sendMessage(chatId, `Отписал. Чтобы получать уведомление перейди /register.)`);
+    } else {
+        bot.sendMessage(chatId, `Не получаешь уведомления. Чтобы получать уведомление перейди /register.)`);
+    }
+
+})
+bot.onText(/\/save/, (msg, match) => {
+    const chatId = msg.chat.id
+    // users.push(chatId)
+    if (chatId == users[0]) {
+        console.log('save BD');
+        console.log(`${users}`);
+    }
 })
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     users.push(chatId);
     console.log(msg);
-    bot.sendMessage(chatId, `Ты написал вот это ${msg.text}`);
-    if (msg.text == '//start') {
 
+    if (msg.text.slice(0, 1) == '/') {//команды управления!
+        if (msg.text == '/start') {
+            bot.sendMessage(chatId, ` 1. Бот умеет отвечать текстом который Вы написали.\n2. Оповещать о прохождении на 2м(если Вы подпишитесь, пункт меню /register)\n3. Отписаться от оповещения пункт меню /unreg.\n4. Можно задать вопросы...`);
+        }
+        if (msg.text.slice(0, 8) == '/sendall') {
+            if (chatId == users[0]) {
+                sendMessageAll(msg.text.slice(8));
+            }
+        }
+        if (msg.text.slice(0, 8) == '/sendone') {
+            let answerOne = msg.text.split(" ")
+            console.log(answerOne[0], answerOne[1]);
+            sendMessage(answerOne.slice(2).join(" "), answerOne[1]);
+            console.log(answerOne.slice(2).join(" "));
+        }
+    } else {
+        bot.sendMessage(chatId, `Ты написал вот это ${msg.text}`);
     }
-    if (msg.text.slice(0, 8) == '/sendall') {
-        if(chatId == users[0]){
-            sendMessageAll(msg.text.slice(8));
-        }   
-    }
-
 });
 function sendMessage(mdg, chatId) {
     let ans = bot.sendMessage(chatId, mdg);
@@ -115,16 +153,16 @@ setInterval(function () {
 setInterval(function () {
     //40m
     //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
-     //2m
+    //2m
     fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
-    //15m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
-    //10m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=28000000-29000000')
-    //20m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=14000000-15000000')
-    //30m
-    // fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=10000000-11000000')
+        //15m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
+        //10m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=28000000-29000000')
+        //20m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=14000000-15000000')
+        //30m
+        // fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=10000000-11000000')
         .then(res => {
             res.text().then(result => {
                 console.log(`prommis good fetch pskreporter`);
@@ -148,21 +186,21 @@ setInterval(function () {
                 })
                 // console.log(answer);
                 for (const keyInCurrent in objFullDBCurrent) {
-                    if(objFullDBOld[keyInCurrent] == undefined){
+                    if (objFullDBOld[keyInCurrent] == undefined) {
                         otpavlyal = false;
                         objFullDBShow[keyInCurrent] = objFullDBCurrent[keyInCurrent];
                     }
-                    if(objFullDBOld.hasOwnProperty(keyInCurrent) && objFullDBOld[keyInCurrent].flowStartSeconds != objFullDBCurrent[keyInCurrent].flowStartSeconds){
+                    if (objFullDBOld.hasOwnProperty(keyInCurrent) && objFullDBOld[keyInCurrent].flowStartSeconds != objFullDBCurrent[keyInCurrent].flowStartSeconds) {
                         otpavlyal = false;
                         objFullDBShow[keyInCurrent] = objFullDBCurrent[keyInCurrent];
                     }
                 }
                 let sendToBot = "";
                 for (const key in objFullDBShow) {
-                    sendToBot+= objFullDBShow[key].inSendingToBot+"\n";
+                    sendToBot += objFullDBShow[key].inSendingToBot + "\n";
                 }
                 // TODO: нужно проверить чтобы сообщение не превышало лимита по длинне. выпадают ошибки
-                if (otpavlyal == false && sendToBot.length >0) {
+                if (otpavlyal == false && sendToBot.length > 0) {
                     otpavlyal = true;
                     sendMessageAll(startMessage + sendToBot);
                     // sendMessage(startMessage + sendToBot, users[0]);
@@ -170,7 +208,7 @@ setInterval(function () {
                 console.log("current", objFullDBCurrent);
                 // console.log("old", objFullDBOld);
                 console.log("show", objFullDBShow);
-                
+
                 objFullDBOld = JSON.parse(JSON.stringify(objFullDBCurrent));
                 objFullDBShow = {};
                 objFullDBCurrent = {};
