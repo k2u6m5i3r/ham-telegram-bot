@@ -45,8 +45,9 @@ let admins = chatIdUsers.admins();
 
 ///*
 bot.setMyCommands([
-    { command: '/start', description: 'Начать получать информацию!. Проверить что бот работает, можно отправить сообщение и в ответ получить его копию.' },
-    { command: '/reg', description: 'Регистрация не работает! Записываю кому отправлять вручную.' },
+    { command: '/start', description: 'Что может бот?' },
+    { command: '/register', description: 'Получать уведомление' },
+    { command: '/unreg', description: 'Не  получать уведомления' },
 ])
 bot.onText(/\/echo (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
