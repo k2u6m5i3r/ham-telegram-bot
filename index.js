@@ -20,6 +20,12 @@ module.exports = {
     // добавить вручную
     return users;
   }
+    admins() {
+    let admins = [];
+    admins.push(XXXXXX);// админ в 0ой ячейке.  XXXXXX - ChatId 
+    // добавить вручную
+    return admins;
+    }
 }
 */
 let callsign = "\"EW8MKU\"";
@@ -34,7 +40,10 @@ let objFullDBShow = {};         // показать новое если есть
 
 // массив ChatID это пользователи которые будут получать сообщения. в 0-ячейке находится админ он может всем рассылать сообщнения вручную всем
 let users = chatIdUsers.users();
+// добавил adminОв отдельным массивом пользователей 
+let admins = chatIdUsers.admins();
 
+///*
 bot.setMyCommands([
     { command: '/start', description: 'Начать получать информацию!. Проверить что бот работает, можно отправить сообщение и в ответ получить его копию.' },
     { command: '/reg', description: 'Регистрация не работает! Записываю кому отправлять вручную.' },
@@ -168,3 +177,4 @@ setInterval(function () {
         })
         .then(text => console.log(`prommis error fetch pskreporter ${text}`))
 }, 300 * 1000);
+//*/
