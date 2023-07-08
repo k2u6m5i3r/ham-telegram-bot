@@ -129,9 +129,24 @@ function sendMessage(mdg, chatId) {
         }
     )
 }
+function sendMessageMarkdown(mdg, chatId) {
+    let ans = bot.sendMessage(chatId, mdg, {parse_mode: 'Markdown'});
+    ans.then(
+        result => {
+            console.log("GOOD answer");
+            console.log(result.chat.username);
+            console.log(result.text);
+        },
+        error => {
+            console.log("ERRROR answer");
+            // console.log(error);
+        }
+    )
+}
 function sendMessageAll(message) {
     for (let i = 0; i < users.length; i++) {
-        sendMessage(message, users[i]);
+        sendMessageMarkdown(message, users[i]);
+        // sendMessage(message, users[i]);
     }
     console.log("Отправленно всем!");
 }
@@ -145,7 +160,7 @@ function parsingCallsign(params) {
     obj.flowStartSeconds = params[6].split("=")[1].slice(1, -1);
     obj.mode = params[7].split("=")[1].slice(1, -1);
     obj.isSend = false;
-    obj.inSendingToBot = `${obj.senderCallsign} ${obj.senderLocator} ${obj.mode}`;
+    obj.inSendingToBot = `[${obj.senderCallsign}](https://www.qrzcq.com/call/${obj.senderCallsign}) ${obj.senderLocator} ${obj.mode}`;
     return obj;
 }
 setInterval(function () {
