@@ -130,7 +130,7 @@ function sendMessage(mdg, chatId) {
     )
 }
 function sendMessageMarkdown(mdg, chatId) {
-    let ans = bot.sendMessage(chatId, mdg, {parse_mode: 'Markdown'});
+    let ans = bot.sendMessage(chatId, mdg, {parse_mode: 'Markdown', disable_web_page_preview:true });
     ans.then(
         result => {
             console.log("GOOD answer");
