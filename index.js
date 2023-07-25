@@ -1,5 +1,7 @@
 var fetch = require('node-fetch');
 
+const qthDistance = require('./qthDistance.js');
+const YOU_QTH_LOCATOR = "KO52LL";
 const token = require('./tokenBotTest.js');
 /*
   в файле tokenBotTest.js
@@ -160,7 +162,7 @@ function parsingCallsign(params) {
     obj.flowStartSeconds = params[6].split("=")[1].slice(1, -1);
     obj.mode = params[7].split("=")[1].slice(1, -1);
     obj.isSend = false;
-    obj.inSendingToBot = `[${obj.senderCallsign}](https://www.qrzcq.com/call/${obj.senderCallsign}) ${obj.senderLocator} ${obj.mode}`;
+    obj.inSendingToBot = `[${obj.senderCallsign}](https://www.qrzcq.com/call/${obj.senderCallsign}) ${obj.senderLocator} ${obj.mode} ${qthDistance.distance(YOU_QTH_LOCATOR, obj.senderLocator)}`;
     return obj;
 }
 setInterval(function () {
