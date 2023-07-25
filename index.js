@@ -52,7 +52,7 @@ bot.setMyCommands([
     { command: '/start', description: 'Что может бот?' },
     { command: '/register', description: 'Получать уведомление' },
     { command: '/unreg', description: 'Не  получать уведомления' },
-    { command: '/version', description: `${VERSION},  полное описание можно посмотреть через github.com/k2u6m5i3r/ham-telegram-bot` },
+    { command: '/version', description: `показать версию бота` },
 ])
 bot.onText(/\/echo (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
@@ -94,6 +94,12 @@ bot.onText(/\/save/, (msg, match) => {
         console.log(`${users}`);
     }
 })
+
+bot.onText(/\/version/, (msg, match) => {
+    const chatId = msg.chat.id
+    bot.sendMessage(chatId, `${VERSION},  полное описание можно посмотреть через github.com/k2u6m5i3r/ham-telegram-bot`);   
+})
+
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     // users.push(chatId); // ошибка исправить
