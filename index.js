@@ -3,6 +3,8 @@ var fetch = require('node-fetch');
 const qthDistance = require('./qthDistance.js');
 const YOU_QTH_LOCATOR = "KO52LL";
 const token = require('./tokenBotTest.js');
+
+const VERSION = '4.1';
 /*
   в файле tokenBotTest.js
   module.exports = {
@@ -50,6 +52,7 @@ bot.setMyCommands([
     { command: '/start', description: 'Что может бот?' },
     { command: '/register', description: 'Получать уведомление' },
     { command: '/unreg', description: 'Не  получать уведомления' },
+    { command: '/version', description: `${VERSION},  полное описание можно посмотреть через github.com/k2u6m5i3r/ham-telegram-bot` },
 ])
 bot.onText(/\/echo (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
