@@ -4,7 +4,7 @@ const qthDistance = require('./qthDistance.js');
 const YOU_QTH_LOCATOR = "KO52LL";
 const token = require('./tokenBotTest.js');
 
-const VERSION = '4.1';
+const VERSION = '4.3';
 /*
   в файле tokenBotTest.js
   module.exports = {
@@ -97,7 +97,7 @@ bot.onText(/\/save/, (msg, match) => {
 
 bot.onText(/\/version/, (msg, match) => {
     const chatId = msg.chat.id
-    bot.sendMessage(chatId, `${VERSION},  полное описание можно посмотреть через github.com/k2u6m5i3r/ham-telegram-bot`);   
+    bot.sendMessage(chatId, `${VERSION},  полное описание можно посмотреть через github.com/k2u6m5i3r/ham-telegram-bot`);
 })
 
 bot.on('message', (msg) => {
@@ -141,7 +141,7 @@ function sendMessage(mdg, chatId) {
     )
 }
 function sendMessageMarkdown(mdg, chatId) {
-    let ans = bot.sendMessage(chatId, mdg, {parse_mode: 'Markdown', disable_web_page_preview:true });
+    let ans = bot.sendMessage(chatId, mdg, { parse_mode: 'Markdown', disable_web_page_preview: true });
     ans.then(
         result => {
             console.log("GOOD answer");
@@ -171,8 +171,12 @@ function parsingCallsign(params) {
     obj.flowStartSeconds = params[6].split("=")[1].slice(1, -1);
     obj.mode = params[7].split("=")[1].slice(1, -1);
     obj.isSend = false;
-    obj.inSendingToBot = `[${obj.senderCallsign}](https://www.qrzcq.com/call/${obj.senderCallsign}) ${obj.senderLocator} ${obj.mode} ${qthDistance.distance(YOU_QTH_LOCATOR, obj.senderLocator).toFixed(2)}km`;
+    obj.inSendingToBot = `[${obj.senderCallsign}](https://www.qrzcq.com/call/${obj.senderCallsign}) ${obj.senderLocator} ${obj.mode} ${qthDistance.distance(YOU_QTH_LOCATOR, obj.senderLocator).toFixed(2)}km ${convertUNIXtimeToGMT(obj.flowStartSeconds)}`;
     return obj;
+}
+function convertUNIXtimeToGMT(unixTime) {
+    let date = new Date(unixTime * 1000);
+    return date.toGMTString().split(" ").splice(4,2).join(" ");
 }
 setInterval(function () {
     console.log("MINUTs");
@@ -181,8 +185,8 @@ setInterval(function () {
 setInterval(function () {
     //40m
     fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=7000000-8000000')
-    //2m
-    //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
+        //2m
+        //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=144000000-146000000')
         //15m
         //fetch('https://retrieve.pskreporter.info/query?receiverCallsign=EW8MKU&frange=21000000-22000000')
         //10m
